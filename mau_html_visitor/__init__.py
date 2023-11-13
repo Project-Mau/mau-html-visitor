@@ -17,6 +17,7 @@ DEFAULT_TEMPLATES = {
     ),
     "link.html": '<a href="{{ target }}">{{ text }}</a>',
     "macro.html": "",
+    "raw.html": "{{ value }}",
     "sentence.html": "{{ content }}",
     "star.html": "<strong>{{ content }}</strong>",
     "text.html": "{{ value }}",
@@ -80,7 +81,6 @@ DEFAULT_TEMPLATES = {
         "</div></div>"
     ),
     "paragraph.html": "<p>{{ content }}</p>",
-    "raw.html": "{{ content }}",
     ########################################
     "list_item.html": "<li>{{ content }}</li>",
     "list.html": (
@@ -126,15 +126,15 @@ class HtmlVisitor(JinjaVisitor):
 
     default_templates = DEFAULT_TEMPLATES
 
-    def _visit_text(self, node):
-        base = super()._visit_text(node)
+    def _visit_text(self, node, *args, **kwargs):
+        base = super()._visit_text(node, *args, **kwargs)
 
         base["data"]["value"] = html.escape(base["data"]["value"])
 
         return base
 
-    def _visit_source__default(self, node):
-        base = super()._visit_source__default(node)
+    def _visit_source__default(self, node, *args, **kwargs):
+        base = super()._visit_source__default(node, *args, **kwargs)
 
         result = base["data"]
 
