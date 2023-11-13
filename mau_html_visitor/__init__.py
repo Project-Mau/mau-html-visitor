@@ -142,7 +142,8 @@ class HtmlVisitor(JinjaVisitor):
         lexer = get_lexer_by_name(node.language)
 
         # Fetch global configuration for Pygments and for the HtmlFormatter
-        pygments_config = self.config.get("pygments", {})
+        mau_config = self.config.get("mau", {})
+        pygments_config = mau_config.get("pygments", {})
         formatter_config = pygments_config.get("html", {})
 
         # Get all the attributes of this specific block
