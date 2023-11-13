@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "mau_html_visitor"
-version = "1.0.0"
+version = "1.1.1"
 description = "A visitor for Mau that converts the AST into HTML"
 authors = [{name = "Leonardo Giordani", email = "giordani.leonardo@gmail.com"}]
 license = {file = "LICENSE"}
