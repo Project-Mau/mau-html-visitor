@@ -1,0 +1,4 @@
+<{% if ordered %}ol{% else %}ul{% endif %}
+{% if kwargs.start %}start={{ kwargs.start }}{% endif %}>
+{{ items }}
+</{% if ordered %}ol{% else %}ul{% endif %}>
