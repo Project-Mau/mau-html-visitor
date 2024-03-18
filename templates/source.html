@@ -5,7 +5,7 @@
 
   <div class="content">
     {% for line, callout in code %}
-    {{ line }}{% if callout %} {{ callout }}{% endif %}\n
+    {{ line }}{% if callout %} {{ callout }}{% endif %}{{ '\n' }}
     {% endfor %}
   </div>
 
