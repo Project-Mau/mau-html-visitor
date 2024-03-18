@@ -8,9 +8,17 @@ from pygments import highlight
 from pygments.formatters import get_formatter_by_name
 from pygments.lexers import get_lexer_by_name
 
-templates = {}
 
-load_templates_from_path(files("templates"), templates)
+# This removes trailing spaces and newlines from
+# HTML templates. This allows to save them in a
+# pretty format without passing unnecessary
+# spaces and indentations to the template engine.
+def filter_html(text):
+    dedent = [i.lstrip() for i in text.split("\n")]
+    return "".join(dedent)
+
+
+templates = load_templates_from_path(files("templates"), filter_html)
 
 DEFAULT_TEMPLATES = {
     "macro.html": "",
@@ -26,7 +34,9 @@ class HtmlVisitor(JinjaVisitor):
     default_templates = Environment(templates)
     default_templates.update(DEFAULT_TEMPLATES)
 
-    # default_templates = DEFAULT_TEMPLATES
+    @staticmethod
+    def templates_filter(text):
+        return filter_html(text)
 
     def _visit_text(self, node, *args, **kwargs):
         base = super()._visit_text(node, *args, **kwargs)
