@@ -15,6 +15,7 @@ from pygments.lexers import get_lexer_by_name
 # spaces and indentations to the template engine.
 def filter_html(text):
     dedent = [i.lstrip() for i in text.split("\n")]
+    dedent = [i for i in dedent if i != ""]
     return "".join(dedent)
 
 
