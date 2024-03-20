@@ -55,8 +55,8 @@ class HtmlVisitor(JinjaVisitor):
         lexer = get_lexer_by_name(node.language)
 
         # Fetch global configuration for Pygments
-        formatter_config = self.environment.getnamespace(
-            "mau.visitor.pygments.html"
+        formatter_config = self.environment.getvar(
+            "mau.visitor.pygments.html", Environment()
         ).asdict()
 
         # Get all the attributes of this specific block
