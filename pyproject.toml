@@ -85,7 +85,3 @@ addopts = """\
 --no-cov-on-fail \
 """
 
-[tool.flit.external-data]
-directory = "templates"
-
-

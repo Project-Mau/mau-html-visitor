@@ -19,7 +19,9 @@ def filter_html(text):
     return "".join(dedent)
 
 
-templates = load_templates_from_path(files("templates"), filter_html)
+templates = load_templates_from_path(
+    files(__package__).joinpath("templates"), filter_html
+)
 
 DEFAULT_TEMPLATES = {
     "macro.html": "",
