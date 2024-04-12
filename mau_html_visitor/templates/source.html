@@ -1,4 +1,4 @@
-<div class="{{ subtype }}">
+<div{% if subtype %} class="{{ subtype }}"{% endif %}>
   {% if title %}
   <div class="title">{{ title }}</div>
   {% endif %}
