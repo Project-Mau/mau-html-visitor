@@ -53,55 +53,56 @@ class HtmlVisitor(JinjaVisitor):
 
         result = base["data"]
 
-        # The Pygments lexer for the given language
-        lexer = get_lexer_by_name(node.language)
-
-        # Fetch global configuration for Pygments
-        formatter_config = self.environment.getvar(
-            "mau.visitor.pygments.html", Environment()
-        ).asdict()
-
-        # Get all the attributes of this specific block
-        # that start with `pygments.`
-        node_pygments_config = dict(
-            (k.replace("pygments.", ""), v)
-            for k, v in node.kwargs.items()
-            if k.startswith("pygments.")
-        )
-
-        # Converting from text to Python might be tricky,
-        # so for now I just update the formatter config with
-        # 'hl_lines' which is a list of comma-separated integers
-        hl_lines = node_pygments_config.get("hl_lines", "")
-        hl_lines = [i for i in hl_lines.split(",") if i != ""]
-
-        # There might be lines marked as highlighted using
-        # Mau's syntax. Pygments starts counting from 1, Mau from 0,
-        # so adjust that.
-        highlight_markers = [i + 1 for i in node.highlights]
-
-        # Merge the two
-        hl_lines = list(set(hl_lines) | set(highlight_markers))
-
-        # Tell Pygments which lines we want to highlight
-        formatter_config["hl_lines"] = hl_lines
-
-        # Create the formatter and pass the config
-        formatter = get_formatter_by_name("html", **formatter_config)
-
-        code = result["code"]
-
         # Merge code lines to hightlight them
-        src = "\n".join(code)
+        src = "\n".join(result["code"])
 
-        # Highlight the source with Pygments
-        highlighted_src = highlight(src, lexer, formatter)
+        highlighter = self.environment.getvar("mau.visitor.highlighter", "pygments")
 
-        # Split highlighted code again
-        code = highlighted_src.split("\n")
+        highlighter = result["kwargs"].pop("highlighter", highlighter)
 
-        result["code"] = list(zip(code, result["markers"]))
+        if highlighter == "pygments":
+            # The Pygments lexer for the given language
+            lexer = get_lexer_by_name(node.language)
 
-        base["data"] = result
+            # Fetch global configuration for Pygments
+            formatter_config = self.environment.getvar(
+                "mau.visitor.pygments.html", Environment()
+            ).asdict()
+
+            # Get all the attributes of this specific block
+            # that start with `pygments.`
+            node_pygments_config = dict(
+                (k.replace("pygments.", ""), v)
+                for k, v in node.kwargs.items()
+                if k.startswith("pygments.")
+            )
+
+            # Converting from text to Python might be tricky,
+            # so for now I just update the formatter config with
+            # 'hl_lines' which is a list of comma-separated integers
+            hl_lines = node_pygments_config.get("hl_lines", "")
+            hl_lines = [i for i in hl_lines.split(",") if i != ""]
+
+            # There might be lines marked as highlighted using
+            # Mau's syntax. Pygments starts counting from 1, Mau from 0,
+            # so adjust that.
+            highlight_markers = [i + 1 for i in node.highlights]
+
+            # Merge the two
+            hl_lines = list(set(hl_lines) | set(highlight_markers))
+
+            # Tell Pygments which lines we want to highlight
+            formatter_config["hl_lines"] = hl_lines
+
+            # Create the formatter and pass the config
+            formatter = get_formatter_by_name("html", **formatter_config)
+
+            # Highlight the source with Pygments
+            highlighted_src = highlight(src, lexer, formatter)
+
+            # Split highlighted code again
+            result["code"] = highlighted_src.split("\n")
+
+        result["code"] = list(zip(result["code"], result["markers"]))
 
         return base

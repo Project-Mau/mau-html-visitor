@@ -1,0 +1,5 @@
+<div class="{{ group_name}}{% if subtype %} {{ subtype }}{% endif %}">
+  {% for block in group.values() %}
+  {{ block }}
+  {% endfor %}
+</div>
