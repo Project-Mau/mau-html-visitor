@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 2.0.1
+=============
+
+[internal] Added end-to-end tests for HtmlVisitor()
+
 Version 2.0.0
 =============
 

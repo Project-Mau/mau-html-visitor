@@ -1,0 +1,37 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div>
+      <div class="content">
+        <div class="highlight">
+          <pre><span></span><span class="k">def</span> <span class= "nf">header_anchor</span><span class= "p">(</span><span class="n">text</span><span class= "p">,</span> <span class="n">level</span><span class= "p">):</span> <span class="callout">1</span>
+    <span class="k">return</span> <span class= "s2">"h</span><span class="si">{}</span><span class= "s2">-</span><span class="si">{}</span><span class= "s2">-</span><span class="si">{}</span><span class= "s2">"</span><span class="o">.</span><span class= "n">format</span><span class="p">(</span>
+        <span class="n">level</span><span class= "p">,</span> <span class="n">quote</span><span class= "p">(</span><span class="n">text</span><span class= "o">.</span><span class="n">lower</span><span class= "p">())[:</span><span class="mi">20</span><span class= "p">],</span> <span class="nb">str</span><span class= "p">(</span><span class="nb">id</span><span class= "p">(</span><span class="n">text</span><span class= "p">))[:</span><span class="mi">8</span><span class= "p">]</span> <span class="callout">2</span>
+    <span class="p">)</span>  <span class= "c1"># pragma: no cover</span>
+</pre>
+        </div>
+        <div class="callouts">
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <span class="callout">1</span>
+                </td>
+                <td>The name of the function
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="callout">2</span>
+                </td>
+                <td>Some memory-related wizardry
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html> 

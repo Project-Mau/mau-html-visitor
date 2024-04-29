@@ -1,0 +1,30 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div>
+      <div class="title"> Python code
+      </div>
+      <div class="content">
+        <div class="highlight">
+          <pre><span></span><span class="k">def</span> <span class= "nf">header_anchor</span><span class= "p">(</span><span class="n">text</span><span class= "p">,</span> <span class="n">level</span><span class= "p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Return a sanitised anchor for a header.</span>
+<span class="sd">    """</span>
+
+    <span class="c1"># Everything lowercase</span>
+    <span class="n">sanitised_text</span> <span class= "o">=</span> <span class="n">text</span><span class= "o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class= "c1"># Get only letters, numbers, dashes, spaces, and dots</span>
+    <span class="n">sanitised_text</span> <span class= "o">=</span> <span class="s2">""</span><span class= "o">.</span><span class="n">join</span><span class= "p">(</span><span class="n">re</span><span class= "o">.</span><span class="n">findall</span><span class= "p">(</span><span class="s2">"[a-z0-9-</span><span class= "se">\\</span><span class="s2">. ]+"</span><span class= "p">,</span> <span class="n">sanitised_text</span><span class= "p">))</span>
+
+    <span class="c1"># Remove multiple spaces</span>
+    <span class="n">sanitised_text</span> <span class= "o">=</span> <span class="s2">"-"</span><span class= "o">.</span><span class="n">join</span><span class= "p">(</span><span class="n">sanitised_text</span><span class= "o">.</span><span class="n">split</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class= "n">sanitised_text</span>
+</pre>
+        </div>
+      </div>
+    </div>
+  </body>
+</html> 

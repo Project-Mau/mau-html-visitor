@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "mau_html_visitor"
-version = "2.0.0"
+version = "2.0.1"
 description = "A visitor for Mau that converts the AST into HTML"
 authors = [{name = "Leonardo Giordani", email = "giordani.leonardo@gmail.com"}]
 license = {file = "LICENSE"}
@@ -76,12 +76,3 @@ disable = [
 [tool.isort]
 profile = "black"
 src_paths = ["src", "tests"]
-
-[tool.pytest.ini_options]
-addopts = """\
---cov mau \
---cov tests \
---cov-report term-missing \
---no-cov-on-fail \
-"""
-
