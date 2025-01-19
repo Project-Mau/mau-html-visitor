@@ -2,10 +2,16 @@
 Changelog
 =========
 
+Version 2.0.2
+=============
+
+- [fix] Fixed missing `nowrap` in Pygments configuration
+- [fix] Fixed usage and positioning of callouts in `source.html` template
+
 Version 2.0.1
 =============
 
-[internal] Added end-to-end tests for HtmlVisitor()
+- [internal] Added end-to-end tests for HtmlVisitor()
 
 Version 2.0.0
 =============

@@ -66,7 +66,7 @@ class HtmlVisitor(JinjaVisitor):
 
             # Fetch global configuration for Pygments
             formatter_config = self.environment.getvar(
-                "mau.visitor.pygments.html", Environment()
+                "mau.visitor.pygments.html", Environment({"nowrap": True})
             ).asdict()
 
             # Get all the attributes of this specific block
