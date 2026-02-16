@@ -1,1 +1,2 @@
-<h{{ level }} id="{{ anchor }}">{{ value }}</h{{ level }}>
+{% if level <= 6 %}{% set lev=level %}{% else %}{% set lev=6 %}{% endif %}
+<h{{ lev }} id="{{ internal_id }}">{{ content }}</h{{ lev }}>

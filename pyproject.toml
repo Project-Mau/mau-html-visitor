@@ -4,27 +4,33 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "mau_html_visitor"
-version = "2.0.2"
+version = "3.0.0"
 description = "A visitor for Mau that converts the AST into HTML"
 authors = [{name = "Leonardo Giordani", email = "giordani.leonardo@gmail.com"}]
 license = {file = "LICENSE"}
 classifiers = [
-"Development Status :: 5 - Production/Stable",
-"License :: OSI Approved :: MIT License",
-"Intended Audience :: Developers",
-"Operating System :: OS Independent",
-"Programming Language :: Python",
-"Programming Language :: Python :: 3",
-"Programming Language :: Python :: 3.7",
-"Programming Language :: Python :: 3.8",
-"Programming Language :: Python :: 3.9",
-"Programming Language :: Python :: 3.10",
-"Topic :: Software Development :: Libraries :: Python Modules",
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: MIT License",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 dependencies = [
-"mau>=4.0.0,<5.0.0",
-"pygments",
+  "mau>=5.0.0,<6.0.0",
+  # The HTML visitor code contains a custom
+  # formatter that is based on the internal
+  # mechanisms of Pygments highlighting.
+  # This means that unfortunately we need
+  # to be careful with any Pygments update.
+  "Pygments>=2.18.0,<2.20.0",
+  "beautifulsoup4"
 ]
 readme = "README.md"
 
@@ -38,41 +44,3 @@ development = []
 [project.entry-points."mau.visitors"]
 visitor = "mau_html_visitor:HtmlVisitor"
 
-[tool.black]
-target-version = ["py37", "py38", "py39", "py310"]
-include = '\.pyi?$'
-
-[tool.coverage.run]
-source = ["mau"]
-omit=["mau/main.py", "mau/__init__.py"]
-
-[tool.coverage.report]
-fail_under = 80
-include = ["mau/*"]
-exclude_lines = [
-'if TYPE_CHECKING:',
-'pragma: no cover'
-]
-exclude_also = [
-"def __hash__",
-"def __repr__",
-"def __str__",
-]
-
-[tool.pylint.main]
-disable = [
-"import-error",
-"missing-class-docstring",
-"missing-function-docstring",
-"missing-module-docstring",
-"protected-access",
-"too-few-public-methods",
-"too-many-arguments",
-"too-many-instance-attributes",
-"too-many-return-statements",
-"use-implicit-booleaness-not-comparison"
-]
-
-[tool.isort]
-profile = "black"
-src_paths = ["src", "tests"]

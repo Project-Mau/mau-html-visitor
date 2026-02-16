@@ -1,3 +1,7 @@
 <div id="_footnotes">
-  {{ entries }}
+  {% if footnotes %}
+  <ul>
+    <li>{% for footnote_item in footnotes %}{{ footnote_item }}{% endfor %}</li>
+  </ul>
+  {% endif %}
 </div>
