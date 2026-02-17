@@ -10,6 +10,7 @@ from pygments.lexers import get_lexer_by_name
 from mau.environment.environment import Environment
 from mau.nodes.node import Node
 from mau.visitors.jinja_visitor import JinjaVisitor, load_templates_from_path
+from mau.nodes.source import SourceLineNode, SourceNode
 
 
 # This removes trailing spaces and newlines from
@@ -109,35 +110,49 @@ class HtmlVisitor(JinjaVisitor):
         return result
 
     def _visit_source(self, node: Node, *args, **kwargs) -> dict:
+        # Copy the source node and all source
+        # line nodes to avoid changing them during
+        # the process.
+        # Without this, if a source node is visited
+        # twice (which can happen if it's in a footnote)
+        # the content of the second render
+        # is the highlight of the highlight.
+        content = []
+        for line in node.content:
+            new_line_node = SourceLineNode(
+                line_number=line.line_number,
+                line_content=line.line_content,
+                highlight_style=line.highlight_style,
+                marker=line.marker,
+                parent=line.parent,
+                arguments=line.arguments,
+                info=line.info,
+            )
+
+            content.append(new_line_node)
+
+        new_node = SourceNode(
+            language=node.language,
+            classes=node.classes,
+            content=content,
+            labels=node.labels,
+            parent=node.parent,
+            arguments=node.arguments,
+            info=node.info,
+        )
+
         # Collect all markers and remove them
         # from the source code.
         all_markers = []
-        for line in node.content:
+        for line in content:
             # Save the marker.
             all_markers.append(line.marker)
 
             # Remove the marker.
             line.marker = None
 
-        # # These are aliases used to convert
-        # # highlight styles into strings used
-        # # for CSS classes. This is useful to
-        # # provide support for syntax like
-        # # :@+: that will map to a CSS class
-        # # like `hll-add`.
-        # style_aliases = {"+": "add", "-": "remove", "!": "important"}
-
-        # # Load user-defined aliases.
-        # custom_style_aliases = self.environment.get(
-        #     "mau.visitor.html.highligh_style_aliases", {}
-        # )
-
-        # # Make sure user-defined aliases
-        # # overwrite the base ones.
-        # style_aliases.update(custom_style_aliases)
-
         # Find all lines that are highlighted.
-        highlighted_lines = [line for line in node.content if line.highlight_style]
+        highlighted_lines = [line for line in content if line.highlight_style]
 
         # Create a dictionary of {line_number: highlight_style}.
         # Convert the highlight_style using the aliases
@@ -153,7 +168,7 @@ class HtmlVisitor(JinjaVisitor):
             hl_line_styles[line.line_number] = line.highlight_style
 
         # Render the code without markers.
-        code = self.visitlist(node, node.content, *args, **kwargs)
+        code = self.visitlist(new_node, content, *args, **kwargs)
 
         # Find the highlighter set in the environment.
         highlighter_name = self.environment.get(
@@ -162,11 +177,11 @@ class HtmlVisitor(JinjaVisitor):
 
         # Override the globally set highlighter if
         # this specific block has a different one.
-        highlighter = node.arguments.named_args.pop("highlighter", highlighter_name)
+        highlighter = new_node.arguments.named_args.pop("highlighter", highlighter_name)
 
         if highlighter == "pygments":
             # The Pygments lexer for the given language.
-            lexer = get_lexer_by_name(node.language)
+            lexer = get_lexer_by_name(new_node.language)
 
             # Fetch global configuration for Pygments.
             formatter_config = self.environment.get(
@@ -189,13 +204,13 @@ class HtmlVisitor(JinjaVisitor):
 
         # This is a list of tuples (node, highlighted_code, marker)
         # for each node in the original content.
-        tmp_content_tuples = list(zip(node.content, highlighted_lines, all_markers))
+        tmp_content_tuples = list(zip(content, highlighted_lines, all_markers))
 
         # Put everything together.
         for line_node, code, marker in tmp_content_tuples:
             line_node.line_content = code
             line_node.marker = marker
 
-        result = super()._visit_source(node, *args, **kwargs)
+        result = super()._visit_source(new_node, *args, **kwargs)
 
         return result
