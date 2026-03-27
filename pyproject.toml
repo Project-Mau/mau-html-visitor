@@ -30,7 +30,7 @@ dependencies = [
   # This means that unfortunately we need
   # to be careful with any Pygments update.
   "Pygments>=2.18.0,<2.20.0",
-  "beautifulsoup4"
+  "beautifulsoup4==4.*"
 ]
 readme = "README.md"
 
@@ -38,7 +38,9 @@ readme = "README.md"
 Home = "https://github.com/Project-Mau/mau-html-visitor"
 
 [project.optional-dependencies]
-testing = []
+testing = [
+  "pytest"
+]
 development = []
 
 [project.entry-points."mau.visitors"]

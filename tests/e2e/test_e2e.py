@@ -1,49 +1,58 @@
-import pathlib
+from pathlib import Path
+
 import pytest
 
 from bs4 import BeautifulSoup
 
-from mau.environment.environment import Environment
-from mau.nodes.page import DocumentNode
-from mau.lexers.main_lexer import MainLexer
-from mau.parsers.main_parser import MainParser
-
-from mau.test_helpers import (
-    init_parser_factory,
-    parser_runner_factory,
-    collect_test_files,
-)
+from mau import Mau
+from mau.test_helpers import NullMessageHandler
 
 from mau_html_visitor import HtmlVisitor
 
-init_parser = init_parser_factory(MainLexer, MainParser)
+# End-to-end tests that exercise the full Mau
+# pipeline (lexer -> parser -> HTML visitor)
+# on real `.mau` source files stored in `cases/`.
+#
+# Each `.mau` file has a companion `.html`
+# reference. The test processes the source
+# and asserts that the output matches the
+# reference (compared via BeautifulSoup to
+# ignore insignificant whitespace differences).
+#
+# Run with `--update-e2e-refs` to regenerate
+# every reference file from the current output.
 
-runner = parser_runner_factory(MainLexer, MainParser)
-
-tests_dir = pathlib.Path(__file__).parent
-
-tst_files = collect_test_files(tests_dir, "source", "mau", "expected", "html")
+CASES_DIR = Path(__file__).parent / "cases"
 
 
-@pytest.mark.parametrize("source,expected", tst_files)
-def test_e2e(source, expected):
-    with open(source, encoding="utf-8") as source_file:
-        source_code = source_file.read()
+def discover_cases():
+    cases = []
+    for mau_path in sorted(CASES_DIR.glob("*.mau")):
+        html_path = mau_path.with_suffix(".html")
+        cases.append(pytest.param(mau_path, html_path, id=mau_path.stem))
+    return cases
 
-    with open(expected, encoding="utf-8") as expected_file:
-        expected_code = expected_file.read()
-        # Remove the trailing newline
-        expected_code = expected_code.rstrip()
 
-    parser = runner(source_code)
+@pytest.mark.parametrize("mau_path,html_path", discover_cases())
+def test_e2e(mau_path, html_path, request):
+    source = mau_path.read_text()
 
-    node = DocumentNode(children=parser.nodes)
-    visitor = HtmlVisitor(Environment())
-    result = visitor.visit(node)
+    mau = Mau(NullMessageHandler())
+    result = mau.process(HtmlVisitor, source, str(mau_path))
+
+    if request.config.getoption("--update-e2e-refs"):
+        html_path.write_text(result + "\n")
+        pytest.skip("reference updated")
+
+    if not html_path.exists():
+        pytest.fail(
+            f"Reference file {html_path.name} not found. "
+            f"Run with --update-e2e-refs to generate it."
+        )
+
+    expected = html_path.read_text().rstrip()
 
     result_soup = BeautifulSoup(result, "html.parser")
-    result_expected = BeautifulSoup(expected_code, "html.parser")
+    expected_soup = BeautifulSoup(expected, "html.parser")
 
-    assert (
-        result_soup.prettify().splitlines() == result_expected.prettify().splitlines()
-    )
+    assert result_soup.prettify() == expected_soup.prettify()

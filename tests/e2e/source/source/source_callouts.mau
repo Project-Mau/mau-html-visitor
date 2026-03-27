@@ -1,8 +1,0 @@
-[*source, python]
-----
-a=2:1:
-# Comment
-print():2:
-----
-1: Assign
-2: Print

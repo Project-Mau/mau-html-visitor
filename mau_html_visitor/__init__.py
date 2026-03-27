@@ -10,7 +10,7 @@ from pygments.lexers import get_lexer_by_name
 from mau.environment.environment import Environment
 from mau.nodes.node import Node
 from mau.visitors.jinja_visitor import JinjaVisitor, _load_templates_from_path
-from mau.nodes.source import SourceLineNode, SourceNode
+from mau.nodes.source import SourceNode
 
 
 TEMPLATES_EXTENSION = ".html"
@@ -41,7 +41,7 @@ class MultiHighlightFormatter(HtmlFormatter):
         super().__init__(**options)
 
         # This is a dictionary of {line_number: highlight_style}.
-        self.hl_line_styles = options.get("hl_line_styles", [])
+        self.hl_line_styles = options.get("hl_line_styles", {})
 
         # Internally, Pygments calls _highlight_lines only
         # if hl_lines is set.
@@ -113,36 +113,15 @@ class HtmlVisitor(JinjaVisitor):
         return result
 
     def _visit_source(self, node: Node, *args, **kwargs) -> dict:
-        # Copy the source node and all source
-        # line nodes to avoid changing them during
-        # the process.
+        # Deep copy the source node to avoid changing it
+        # during the process.
         # Without this, if a source node is visited
         # twice (which can happen if it's in a footnote)
         # the content of the second render
         # is the highlight of the highlight.
-        content = []
-        for line in node.content:
-            new_line_node = SourceLineNode(
-                line_number=line.line_number,
-                line_content=line.line_content,
-                highlight_style=line.highlight_style,
-                marker=line.marker,
-                parent=line.parent,
-                arguments=line.arguments,
-                info=line.info,
-            )
+        new_node = node.deepcopy()
 
-            content.append(new_line_node)
-
-        new_node = SourceNode(
-            language=node.language,
-            classes=node.classes,
-            content=content,
-            labels=node.labels,
-            parent=node.parent,
-            arguments=node.arguments,
-            info=node.info,
-        )
+        content = new_node.content
 
         # Collect all markers and remove them
         # from the source code.
@@ -162,12 +141,6 @@ class HtmlVisitor(JinjaVisitor):
         # loaded above.
         hl_line_styles: dict[str, str] = {}
         for line in highlighted_lines:
-            # # Get the highlight style. Replace it
-            # # with the aliased version if any.
-            # highlight_style = style_aliases.get(
-            #     line.highlight_style, line.highlight_style
-            # )
-
             hl_line_styles[line.line_number] = line.highlight_style
 
         # Render the code without markers.
@@ -180,7 +153,7 @@ class HtmlVisitor(JinjaVisitor):
 
         # Override the globally set highlighter if
         # this specific block has a different one.
-        highlighter = new_node.arguments.named_args.pop("highlighter", highlighter_name)
+        highlighter = new_node.arguments.named_args.get("highlighter", highlighter_name)
 
         if highlighter == "pygments":
             # The Pygments lexer for the given language.
@@ -197,10 +170,11 @@ class HtmlVisitor(JinjaVisitor):
 
             # Create the formatter and pass the config.
             formatter = MultiHighlightFormatter(**formatter_config)
-            # formatter = get_formatter_by_name("html", **formatter_config)
 
             # Highlight the source with Pygments
             highlighted_src = highlight(code, lexer, formatter)
+        else:
+            highlighted_src = code
 
         # Split highlighted code again into lines.
         highlighted_lines = highlighted_src.split("\n")
