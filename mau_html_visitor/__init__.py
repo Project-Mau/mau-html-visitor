@@ -85,7 +85,7 @@ class HtmlVisitor(JinjaVisitor):
 
     default_templates = Environment.from_dict(templates)
 
-    def _postprocess(self, result, *args, **kwargs):
+    def _postprocess(self, result, **kwargs):
         # Check if the visitor settings enable
         # postprocessing of the resulting HTML.
         if not self.environment.get("mau.visitor.html.pretty", False):
@@ -98,21 +98,21 @@ class HtmlVisitor(JinjaVisitor):
 
         return pretty
 
-    def _visit_text(self, node: Node, *args, **kwargs) -> dict:
-        result = super()._visit_text(node, *args, **kwargs)
+    def _visit_text(self, node: Node, **kwargs) -> dict:
+        result = super()._visit_text(node, **kwargs)
 
         result["value"] = html.escape(result["value"])
 
         return result
 
-    def _visit_verbatim(self, node: Node, *args, **kwargs) -> dict:
-        result = super()._visit_verbatim(node, *args, **kwargs)
+    def _visit_verbatim(self, node: Node, **kwargs) -> dict:
+        result = super()._visit_verbatim(node, **kwargs)
 
         result["value"] = html.escape(result["value"])
 
         return result
 
-    def _visit_source(self, node: Node, *args, **kwargs) -> dict:
+    def _visit_source(self, node: Node, **kwargs) -> dict:
         # Deep copy the source node to avoid changing it
         # during the process.
         # Without this, if a source node is visited
@@ -144,7 +144,7 @@ class HtmlVisitor(JinjaVisitor):
             hl_line_styles[line.line_number] = line.highlight_style
 
         # Render the code without markers.
-        code = self.visitlist(new_node, content, *args, **kwargs)
+        code = self.visitlist(new_node, content, **kwargs)
 
         # Find the highlighter set in the environment.
         highlighter_name = self.environment.get(
@@ -188,6 +188,6 @@ class HtmlVisitor(JinjaVisitor):
             line_node.line_content = code
             line_node.marker = marker
 
-        result = super()._visit_source(new_node, *args, **kwargs)
+        result = super()._visit_source(new_node, **kwargs)
 
         return result
