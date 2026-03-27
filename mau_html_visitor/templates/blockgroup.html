@@ -1,5 +1,5 @@
 <div class="{{ name}}{% if subtype %} {{ subtype }}{% endif %}">
-  {% for block in blocks.values() %}
-  {{ block }}
+  {% for item in items.values() %}
+  {{ item }}
   {% endfor %}
 </div>

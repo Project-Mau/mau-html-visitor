@@ -9,8 +9,11 @@ from pygments.lexers import get_lexer_by_name
 
 from mau.environment.environment import Environment
 from mau.nodes.node import Node
-from mau.visitors.jinja_visitor import JinjaVisitor, load_templates_from_path
+from mau.visitors.jinja_visitor import JinjaVisitor, _load_templates_from_path
 from mau.nodes.source import SourceLineNode, SourceNode
+
+
+TEMPLATES_EXTENSION = ".html"
 
 
 # This removes trailing spaces and newlines from
@@ -23,8 +26,8 @@ def filter_html(text):
     return "".join(dedent)
 
 
-templates = load_templates_from_path(
-    str(files(__package__).joinpath("templates")), filter_html
+templates = _load_templates_from_path(
+    str(files(__package__).joinpath("templates")), TEMPLATES_EXTENSION, filter_html
 )
 
 
@@ -77,7 +80,7 @@ class MultiHighlightFormatter(HtmlFormatter):
 
 class HtmlVisitor(JinjaVisitor):
     format_code = "html"
-    extension = "html"
+    extension = TEMPLATES_EXTENSION
     templates_preprocess: Callable[[str], str] | None = filter_html
 
     default_templates = Environment.from_dict(templates)

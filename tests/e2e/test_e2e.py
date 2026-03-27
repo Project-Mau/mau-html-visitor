@@ -1,6 +1,5 @@
 import pathlib
 import pytest
-import yaml
 
 from bs4 import BeautifulSoup
 
