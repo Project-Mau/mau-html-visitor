@@ -2,6 +2,15 @@
 Changelog
 =========
 
+Version 3.0.0
+=============
+
+- [enhancement] Compatibility with Mau 5
+- [fix] Use node.deepcopy() instead of manual node reconstruction
+- [fix] Use .get() instead of .pop() on node arguments to avoid mutation
+- [fix] Handle non-Pygments highlighters without crashing
+- [fix] Fixed default value of hl_line_styles in MultiHighlightFormatter
+
 Version 2.0.2
 =============
 

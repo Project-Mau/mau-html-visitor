@@ -1,0 +1,5 @@
+<div class="{{ name}}{% if subtype %} {{ subtype }}{% endif %}">
+  {% for item in items.values() %}
+  {{ item }}
+  {% endfor %}
+</div>

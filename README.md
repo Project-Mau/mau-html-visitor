@@ -12,23 +12,18 @@ and Mau will automatically be able to load it. To use the visitor you need to lo
 
 ``` python
 from mau import Mau, load_visitors
+from mau.message import LogMessageHandler
 
 visitor_classes = load_visitors()
 
-visitors = {i.format_code: i for i in visitor_classes}
+visitors = {i.format_code: i for i in visitor_classes.values()}
 visitor_class = visitors["html"]
 
-mau = Mau(
-    "path/of/the/source",
-    visitor_class=visitor_class,
-)
+message_handler = LogMessageHandler()
 
-lexer = self._mau.run_lexer(text)
-parser = self._mau.run_parser(lexer.tokens)
-content = self._mau.process(parser.nodes, parser.environment)
+mau = Mau(message_handler)
 
-if visitor_class.transform:
-    content = visitor_class.transform(content)
+result = mau.process(visitor_class, text, "source.mau")
 ```
 
 The default extension for templates is `.html`. The plugin uses [Pygments](https://pygments.org/) to provide source code highlighting.
